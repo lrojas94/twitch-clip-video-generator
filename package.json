@@ -1,0 +1,21 @@
+{
+  "name": "twitch-clip-video-generator",
+  "version": "0.0.1",
+  "description": "A video generator based off of the twitch api",
+  "main": "index.js",
+  "repository": "git@github.com:lrojas94/twitch-clip-video-generator.git",
+  "author": "Luis Rojas <lrojas94@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2015-node": "^6.1.1",
+    "eslint": "^7.7.0",
+    "mocha": "^8.1.1"
+  }
+}
