@@ -1,5 +1,7 @@
 import axios from "axios";
 import moment from "moment";
+import fs from "fs";
+import path from "path";
 
 import getConfig from "../util/config";
 import getLogger from "../util/logger";
@@ -50,23 +52,38 @@ const getClipsFromGame = async ({
     });
 
     const { data: clips } = data;
-    const downloadUrls = clips
-      .map((clip) => getDownloadUrlFromClip(clip))
+    const clipDownloadItems = clips
+      .map((clip) => getDownloadDataFromClip(clip))
       .filter(Boolean);
 
-    console.log(downloadUrls);
+    const [clipDownloadItem] = clipDownloadItems;
+
+    // Test, download single clip:
+    console.log("Download start...");
+    await downloadClip(clipDownloadItem);
+    console.log("Download end");
   } catch (error) {
     log.error("getClipsFromGame :: error", error);
   }
 };
 
-const getDownloadUrlFromClip = (clip) => {
+/**
+ * Gets download url info for a twitch clip.
+ *
+ * @param {Object} clip Twitch clip object
+ * @returns {{
+ *  url: String
+ *  filename: String
+ * }}
+ */
+const getDownloadDataFromClip = (clip) => {
   const { thumbnail_url: thumbnailUrl } = clip ?? {};
 
   if (!clip || !thumbnailUrl) {
     return null;
   }
 
+  const lastSlash = thumbnailUrl.lastIndexOf("/");
   const previewIndex = thumbnailUrl.indexOf("-preview-");
 
   if (previewIndex === -1) {
@@ -74,9 +91,31 @@ const getDownloadUrlFromClip = (clip) => {
     return null;
   }
 
-  const downloadUrl = thumbnailUrl.slice(0, previewIndex);
+  const downloadUrlRaw = thumbnailUrl.slice(0, previewIndex);
+  const filenameRaw = thumbnailUrl.slice(lastSlash + 1, previewIndex);
 
-  return `${downloadUrl}.mp4`;
+  return {
+    url: `${downloadUrlRaw}.mp4`,
+    filename: `${filenameRaw}.mp4`,
+  };
+};
+
+const downloadClip = async ({ url, filename }) => {
+  const downlaodPath = path.resolve(__dirname, "../../tmp", filename);
+  const fileWriter = fs.createWriteStream(downlaodPath);
+
+  const res = await axios({
+    url,
+    method: "GET",
+    responseType: "stream",
+  });
+
+  res.data.pipe(fileWriter);
+
+  return new Promise((resolve, reject) => {
+    fileWriter.on("finish", resolve);
+    fileWriter.on("error", reject);
+  });
 };
 
 export { getAuthToken, getClipsFromGame };

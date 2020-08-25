@@ -7,3 +7,4 @@ npm-debug.log
 combined.log
 error.log
 yarn-error.log
+tmp/*.mp4
