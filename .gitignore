@@ -4,3 +4,6 @@ dist/
 build/
 npm-debug.log
 .env
+combined.log
+error.log
+yarn-error.log
