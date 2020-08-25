@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "axios": "^0.20.0",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "moment": "^2.27.0",
+    "winston": "^3.3.3"
   }
 }
