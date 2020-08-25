@@ -12,3 +12,8 @@
 {"message":"init :: Starting...","level":"info","name":"init"}
 {"name":"Twitch.service","access_token":"8k15ocjz3jlcru3fj0e99tdq9ohsxl","expires_in":5205097,"token_type":"bearer","level":"info","message":"getAuthToken :: Gotten token response"}
 {"message":"init :: App started properly...","level":"info","name":"init"}
+{"message":"getAuthToken :: Getting token...","level":"info","name":"Twitch.service"}
+{"message":"init :: Starting...","level":"info","name":"init"}
+{"name":"Twitch.service","access_token":"z8czb1r8bl7moip7ezltbhsrfx73m2","expires_in":5122540,"token_type":"bearer","level":"info","message":"getAuthToken :: Gotten token response"}
+{"message":"init :: App started properly...","level":"info","name":"init"}
+{"name":"Twitch.service","game_id":"497385","started_at":"2020-08-24T00:00:00-04:00","ended_at":"2020-08-24T23:59:59-04:00","level":"info","message":"getClipsFromGame :: getting clips with params"}

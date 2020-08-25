@@ -37,12 +37,16 @@ const getClipsFromGame = async ({
   endDate = moment().endOf("day").format(),
 } = {}) => {
   try {
+    const params = {
+      game_id: gameId,
+      started_at: startDate,
+      ended_at: endDate,
+    };
+
+    log.info("getClipsFromGame :: getting clips with params", params);
+
     const { data } = await axios.get("https://api.twitch.tv/helix/clips", {
-      params: {
-        game_id: gameId,
-        started_at: startDate,
-        ended_at: endDate,
-      },
+      params,
     });
 
     const { data: clips } = data;
