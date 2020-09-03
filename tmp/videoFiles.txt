@@ -1,0 +1,4 @@
+file '/mnt/c/Users/l_roj/Desktop/Work/twitch-clip-video-generator/tmp/AT-cm%7C835596142.mp4'
+file '/mnt/c/Users/l_roj/Desktop/Work/twitch-clip-video-generator/tmp/AT-cm%7C836879640.mp4'
+
+ffmpeg -i videoFiles.txt -filter_complex "[0:v] [0:a] [1:v] [1:a] concat=n=2:v=1:a=1 [v] [a]" -map "[v]" -map "[a]" output.mp4
