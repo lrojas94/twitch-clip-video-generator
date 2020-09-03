@@ -69,13 +69,9 @@ const createVideoFileListFromDirectory = async (dir) => {
       .map((_, index) => `[${index}:v] [${index}:a]`)
       .join(" ")} concat=n=${
       upscaledVideoFileNames.length
-    }:v=1:a=1 [v] [a]" -map "[v]" -map "[a]" ${path.resolve(
-      __dirname,
-      "../../tmp",
-      "out.mp4"
-    )}`;
+    }:v=1:a=1 [v] [a]" -map "[v]" -map "[a]" ${path.resolve(dir, "out.mp4")}`;
 
-    execCmd(mergeCmd);
+    await execCmd(mergeCmd);
 
     log.info("createVideoFileListFromDirectory :: Videos have been merged");
 

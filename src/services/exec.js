@@ -14,6 +14,9 @@ const execCmd = (cmd) => {
       }
     });
 
+    process.stdout.on("message", function (data) {
+      console.log(data);
+    });
     process.stdout.on("data", function (data) {
       console.log(data);
     });

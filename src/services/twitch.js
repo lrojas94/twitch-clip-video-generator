@@ -2,6 +2,7 @@ import axios from "axios";
 import moment from "moment";
 import fs from "fs";
 import path from "path";
+import pMap from "p-map";
 
 import getConfig from "../util/config";
 import getLogger from "../util/logger";
@@ -37,6 +38,7 @@ const getClipsFromGame = async ({
   gameId = "497385",
   startDate = moment().startOf("day").format(),
   endDate = moment().endOf("day").format(),
+  downloadPath,
 } = {}) => {
   try {
     const params = {
@@ -53,17 +55,16 @@ const getClipsFromGame = async ({
 
     const { data: clips } = data;
     const clipDownloadItems = clips
-      .map((clip) => getDownloadDataFromClip(clip))
+      .map((clip) => getDownloadDataFromClip({ clip, downloadPath }))
       .filter(Boolean);
 
-    const [clipDownloadItem] = clipDownloadItems;
+    log.info("getClipsFromGame :: Total clips", clips.length);
+    log.info("getClipsFromGame :: Starting downloads...");
 
-    // Test, download single clip:
-    console.log("Download start...");
-    await downloadClip(clipDownloadItem);
-    console.log("Download end");
+    await pMap(clipDownloadItems, downloadClip, { concurrency: 2 });
   } catch (error) {
     log.error("getClipsFromGame :: error", error);
+    throw error;
   }
 };
 
@@ -76,7 +77,7 @@ const getClipsFromGame = async ({
  *  filename: String
  * }}
  */
-const getDownloadDataFromClip = (clip) => {
+const getDownloadDataFromClip = ({ clip, downloadPath }) => {
   const { thumbnail_url: thumbnailUrl } = clip ?? {};
 
   if (!clip || !thumbnailUrl) {
@@ -97,11 +98,12 @@ const getDownloadDataFromClip = (clip) => {
   return {
     url: `${downloadUrlRaw}.mp4`,
     filename: `${filenameRaw}.mp4`,
+    downloadPath,
   };
 };
 
-const downloadClip = async ({ url, filename }) => {
-  const downlaodPath = path.resolve(__dirname, "../../tmp", filename);
+const downloadClip = async ({ url, filename, downloadPath }) => {
+  const downlaodPath = path.resolve(downloadPath, filename);
   const fileWriter = fs.createWriteStream(downlaodPath);
 
   const res = await axios({
@@ -113,8 +115,15 @@ const downloadClip = async ({ url, filename }) => {
   res.data.pipe(fileWriter);
 
   return new Promise((resolve, reject) => {
-    fileWriter.on("finish", resolve);
-    fileWriter.on("error", reject);
+    fileWriter.on("finish", () => {
+      resolve(true);
+    });
+    fileWriter.on("error", (err) => {
+      // Delete the file:
+      fs.unlinkSync(downlaodPath);
+      log.error("downloadClip :: Error while downloading:", err);
+      reject(false);
+    });
   });
 };
 
